@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08141a">
+<meta name="description" content="Interactive 3D optics lab with an island, converging lens and digital camera.">
+<title>ImageProcessing · 3D Optics Lab</title><link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+<symbol id="icon-aperture" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m14.5 3.4-3.9 6.8m-7.2-.8h7.8m-3.5 11.2 3.9-6.8m9-1.2h-7.8m-1.8-9.1 3.9 6.8m4 9.1-3.9-6.8"/></symbol>
+<symbol id="icon-camera" viewBox="0 0 24 24"><path d="M3 7h4l2-3h6l2 3h4v13H3z"/><circle cx="12" cy="13" r="4"/></symbol>
+<symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M4 18v3h16v-3"/></symbol>
+<symbol id="icon-reset" viewBox="0 0 24 24"><path d="M3 11a9 9 0 1 1 2.6 7.4M3 19v-6h6"/></symbol>
+<symbol id="icon-orbit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><ellipse cx="12" cy="12" rx="10" ry="5" transform="rotate(-26 12 12)"/></symbol>
+<symbol id="icon-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+<symbol id="icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></symbol>
+</svg>
+<div class="app-shell">
+<header class="topbar">
+  <div class="brand"><span class="brand-mark"><svg class="icon"><use href="#icon-aperture"/></svg></span><div><strong>ImageProcessing<span class="brand-dot">.</span></strong><span class="brand-subtitle" data-i18n="brandSubtitle">3D optics laboratory</span></div></div>
+  <div class="header-actions"><span class="course-pill"><span class="status-dot"></span><span data-i18n="projectBadge">PROJECT 01 · IMAGE PROCESSING</span></span>
+    <button class="button button-ghost language-button" id="languageButton" type="button" aria-label="Switch to Portuguese">PT</button>
+    <button class="button button-ghost" id="infoButton" type="button"><svg class="icon"><use href="#icon-info"/></svg><span data-i18n="infoButton">Info</span></button>
+    <button class="button button-primary" id="captureButton" type="button"><svg class="icon"><use href="#icon-camera"/></svg><span data-i18n="captureButton">Take photograph</span></button>
+  </div>
+</header>
+<main class="workspace" id="workspace">
+  <section class="stage" aria-label="Interactive 3D optics scene"><div id="threeStage" class="three-stage"></div>
+    <div class="stage-top"><span class="eyebrow"><span class="live-dot"></span><span data-i18n="live">LIVE SIMULATION</span></span><span class="stage-mode" id="viewName">OVERVIEW</span></div>
+    <div class="stage-bottom"><div class="stage-intro"><span class="stage-index" data-i18n="stageIndex">01 / GEOMETRICAL OPTICS</span><h1 data-i18n="heroTitle">From island to sensor.</h1><p data-i18n="heroText">Trace light through different parts of the lens and see it meet at the image plane.</p></div><div class="stage-hint"><svg class="icon"><use href="#icon-orbit"/></svg><span data-i18n="orbitHint">Drag to orbit<br>Scroll to zoom</span></div></div>
+    <div class="stage-key" aria-hidden="true"><span><i class="key-dot cyan"></i><span data-i18n="cyanRay">Cyan rays</span></span><span><i class="key-dot amber"></i><span data-i18n="amberRay">Amber rays</span></span><span><i class="axis-x"></i>X</span><span><i class="axis-y"></i>Y</span><span><i class="axis-z"></i>Z</span></div>
+  </section>
+  <aside class="sidebar" id="sidebar" aria-label="Camera controls">
+    <div class="panel-heading"><div class="heading-text"><span class="overline" data-i18n="controlOverline">CAMERA CONTROLS</span><h2 data-i18n="controlTitle">Explore the camera</h2><span id="cameraPosition" class="pose-label">X 0.0 · Y 0.0 · Z 0.0</span></div><button class="icon-button collapse-button" id="collapseButton" type="button" aria-controls="controlBody" aria-expanded="true" aria-label="Minimize camera controls">−</button></div>
+    <div class="sidebar-body" id="controlBody">
+      <section class="control-section" aria-labelledby="viewsTitle"><div class="section-head"><h3 id="viewsTitle" data-i18n="viewsTitle">Viewing angle</h3><span class="section-number">01</span></div><div class="segmented" role="group" aria-label="Scene view"><button type="button" class="view-button active" data-view="overview" aria-pressed="true" data-i18n="viewOverview">Overview</button><button type="button" class="view-button" data-view="rays" aria-pressed="false" data-i18n="viewRays">Rays</button><button type="button" class="view-button" data-view="sensor" aria-pressed="false" data-i18n="viewSensor">Sensor</button></div></section>
+      <section class="control-section" aria-labelledby="lensTitle"><div class="section-head"><h3 id="lensTitle" data-i18n="lensTitle">Converging lens</h3><span class="section-number">02</span></div><div class="slider-label"><label for="focalRange" data-i18n="focalLength">Focal length</label><output id="focalValue" for="focalRange">50 mm</output></div><input id="focalRange" type="range" min="35" max="85" value="50" step="1"><div class="scale-labels"><span>35 mm</span><span>85 mm</span></div><p class="help-copy" data-i18n="focalHelp">The sensor follows the focal plane. Scale: 45 mm = 1 scene unit.</p></section>
+      <section class="control-section" aria-labelledby="imageTitle"><div class="section-head"><h3 id="imageTitle" data-i18n="imageControls">Image controls</h3><span class="section-number">03</span></div><div class="slider-label"><label for="exposureRange" data-i18n="exposure">Exposure</label><output id="exposureValue">1.30</output></div><input id="exposureRange" type="range" min="0.6" max="2.4" value="1.3" step="0.05"><div class="slider-label second-slider"><label for="lightRange" data-i18n="lightIntensity">Light intensity</label><output id="lightValue">2.35</output></div><input id="lightRange" type="range" min="0.5" max="4.5" value="2.35" step="0.05"></section>
+      <section class="control-section" aria-labelledby="moveTitle"><div class="section-head"><h3 id="moveTitle" data-i18n="moveTitle">Move the camera</h3><span class="section-number">04</span></div><div class="move-grid" role="group" aria-label="Move the physical camera"><span></span><button type="button" data-move="up" data-i18n="moveUp">↑ Up</button><button type="button" data-move="forward" data-i18n="moveForward">Forward</button><button type="button" data-move="left" data-i18n="moveLeft">Left</button><button type="button" data-move="center" class="centre-button" data-i18n="moveCentre">Centre</button><button type="button" data-move="right" data-i18n="moveRight">Right</button><span></span><button type="button" data-move="down" data-i18n="moveDown">↓ Down</button><button type="button" data-move="back" data-i18n="moveBack">Back</button></div><p class="help-copy keyboard-hint" data-i18n="keyboardHelp">Keyboard: W/S up/down · A/D left/right · Q/E forward/back</p></section>
+      <section class="control-section" aria-labelledby="layersTitle"><div class="section-head"><h3 id="layersTitle" data-i18n="layersTitle">Visible elements</h3><span class="section-number">05</span></div><label class="toggle-row"><span><i class="key-dot cyan"></i><span data-i18n="lightRays">Light rays</span></span><input id="raysToggle" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label><label class="toggle-row"><span><i class="axis-x"></i><span data-i18n="opticalAxis">Coloured axes</span></span><input id="axisToggle" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label><label class="toggle-row"><span><svg class="icon"><use href="#icon-eye"/></svg><span data-i18n="transparentShell">Transparent body</span></span><input id="shellToggle" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label></section>
+      <section class="control-section sensor-section" aria-labelledby="sensorTitle"><div class="section-head"><h3 id="sensorTitle" data-i18n="sensorTitle">Live sensor image</h3><span class="section-number">06</span></div><div class="preview-frame"><canvas id="sensorPreview" width="640" height="360" role="img" aria-label="Inverted image formed on the sensor"></canvas><span class="preview-corner">LIVE · 180°</span></div><div class="preview-caption"><span><span class="status-dot"></span><span data-i18n="sensorCaption">REAL · INVERTED</span></span><span>RGB</span></div></section>
+      <div class="readout"><span class="overline" data-i18n="geometryTitle">IMAGE GEOMETRY</span><div class="equation">1/f = 1/u + 1/v</div><div class="readout-line"><span data-i18n="objectDistanceLabel">Object to lens (u)</span><strong id="objectDistance">9.4 u</strong></div><div class="readout-line"><span data-i18n="imageDistanceLabel">Lens to sensor (v)</span><strong id="imageDistance">1.26 u</strong></div><div class="readout-line"><span data-i18n="magnificationLabel">Magnification (m)</span><strong id="magnification">−0.13×</strong></div></div>
+      <button type="button" class="restore-button" id="resetButton"><svg class="icon"><use href="#icon-reset"/></svg><span data-i18n="reset">Restore all defaults</span></button>
+    </div>
+  </aside>
+</main>
+<section class="learning" aria-labelledby="pipelineTitle">
+  <div class="learning-heading"><span class="overline" data-i18n="pipelineOverline">OPTICS AND DIGITAL PIPELINE</span><h2 id="pipelineTitle" data-i18n="pipelineTitle">How the image is created</h2></div>
+  <div class="pipeline">
+    <article><span>01</span><h3 data-i18n="stepOneTitle">3D geometry</h3><p data-i18n="stepOneText">Procedural meshes form the island, shoreline, ocean, trees and camera.</p></article>
+    <article><span>02</span><h3 data-i18n="stepTwoTitle">Refraction</h3><p data-i18n="stepTwoText">The thin-lens equation predicts the image point. Seven rays cross different parts of the lens and meet there.</p></article>
+    <article><span>03</span><h3 data-i18n="stepThreeTitle">Digital sensor</h3><p data-i18n="stepThreeText">A live view from the moving lens is rotated 180° and displayed on the sensor.</p></article>
+    <article><span>04</span><h3 data-i18n="stepFourTitle">Image processing</h3><p data-i18n="stepFourText">A separate high-resolution capture is upright; RGB can be converted to grayscale.</p></article>
+    <article><span>05</span><h3 data-i18n="stepFiveTitle">Documented PNG</h3><p data-i18n="stepFiveText">The photograph includes the selected optical settings and camera position.</p></article>
+  </div>
+  <div class="technology"><h2 data-i18n="technologyTitle">Technologies and concepts</h2><div class="tech-grid">
+    <article><strong>Three.js + WebGL</strong><p data-i18n="techThree">3D rendering, transparent camera, procedural geometry and lighting.</p></article>
+    <article><strong data-i18n="techOpticsTitle">Geometrical optics</strong><p data-i18n="techOptics">Thin lens, focal distance, image plane, magnification and ray tracing.</p></article>
+    <article><strong>Canvas API</strong><p data-i18n="techCanvas">High-resolution RGB/grayscale processing and documented PNG export.</p></article>
+    <article><strong data-i18n="techResponsiveTitle">Responsive interface</strong><p data-i18n="techResponsive">HTML, CSS and JavaScript, with touch and keyboard controls.</p></article>
+  </div></div>
+</section>
+<footer class="footer"><span>Created by Computer Engineering student Alberto Junior, with the help of AI.</span><span class="footer-note">ENIDH · 2026</span></footer>
+</div>
+
+<dialog id="infoDialog" class="modal info-modal" aria-labelledby="infoTitle"><header class="modal-head"><div><span class="overline" data-i18n="infoOverline">PROJECT INFORMATION</span><h2 id="infoTitle" data-i18n="infoTitle">How the simulation works</h2></div><button type="button" class="icon-button close-button" data-close="infoDialog" aria-label="Close">×</button></header><div class="modal-content info-content">
+<article class="info-card"><strong>01</strong><div><h3 data-i18n="infoOneTitle">Detailed procedural island</h3><p data-i18n="infoOneText">Varied terrain, sand and a wet shoreline surround palms, foliage and rocks. Water occupies a separate ring around the island.</p></div></article>
+<article class="info-card"><strong>02</strong><div><h3 data-i18n="infoTwoTitle">Camera cutaway and tripod</h3><p data-i18n="infoTwoText">The transparent body exposes the convex lens, ray paths and sensor. Only the camera moves; the island stays in place.</p></div></article>
+<article class="info-card"><strong>03</strong><div><h3 data-i18n="infoThreeTitle">Visible optical geometry</h3><p data-i18n="infoThreeText">X follows the optical direction. Y and Z show vertical and lateral movement. Rays from one object point converge at one image point.</p></div></article>
+<article class="info-card"><strong>04</strong><div><h3 data-i18n="infoFourTitle">Live inverted sensor</h3><p data-i18n="infoFourText">The sensor shows the inverted image formed by the lens. Moving the camera changes its viewpoint and the ray geometry.</p></div></article>
+<article class="info-card"><strong>05</strong><div><h3 data-i18n="infoFiveTitle">Capture and processing</h3><p data-i18n="infoFiveText">The photograph is rendered anew at high resolution and saved upright, in RGB or grayscale, with technical data visible on the PNG.</p></div></article>
+<button type="button" class="button button-primary modal-done" data-close="infoDialog" data-i18n="understood">Understood</button></div></dialog>
+
+<dialog id="captureDialog" class="modal capture-modal" aria-labelledby="captureTitle"><header class="modal-head"><div><span class="overline" data-i18n="captureOverline">PROCESSED CAPTURE</span><h2 id="captureTitle" data-i18n="captureTitle">Camera result</h2></div><button type="button" class="icon-button close-button" data-close="captureDialog" aria-label="Close">×</button></header><div class="modal-content capture-content">
+<div class="format-toggle" role="group" aria-label="Photo colour mode"><button type="button" data-mode="RGB" class="active" aria-pressed="true">RGB</button><button type="button" data-mode="Grayscale" aria-pressed="false" data-i18n="grayscale">Grayscale</button></div>
+<div class="capture-frame"><canvas id="capturePreview" width="640" height="360" role="img" aria-label="Upright photograph"></canvas></div>
+<p class="capture-note" data-i18n="captureNote">This is the upright photograph recorded by the camera. The live image on the physical sensor remains inverted.</p>
+<div class="metadata"><h3 data-i18n="imageFile">IMAGE FILE</h3><dl id="fileMetadata"></dl><h3 data-i18n="opticalParameters">OPTICAL AND CAMERA PARAMETERS</h3><dl id="opticalMetadata"></dl></div>
+<div class="capture-actions"><button type="button" class="button button-primary" id="downloadPhoto"><svg class="icon"><use href="#icon-download"/></svg><span data-i18n="downloadInformation">Download image with information</span></button><button type="button" class="button button-ghost" data-close="captureDialog" data-i18n="close">Close</button></div>
+</div></dialog>
+<div id="announce" class="sr-only" role="status" aria-live="polite"></div>
+<script type="module" src="./app.js"></script>
+</body></html>
